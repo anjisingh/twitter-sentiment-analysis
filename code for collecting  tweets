@@ -1,0 +1,83 @@
+#add  twitter4j-core-3.0.5.jar for running this file
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package index;
+
+import java.util.ArrayList;
+import twitter4j.DirectMessage;
+import twitter4j.Query;
+import twitter4j.QueryResult;
+import twitter4j.ResponseList;
+import twitter4j.Status;
+import twitter4j.Twitter;
+import twitter4j.TwitterException;
+import twitter4j.TwitterFactory;
+import twitter4j.conf.ConfigurationBuilder;
+
+/**
+ *
+ * @author Ayushi
+ */
+public class tweets{
+    
+    
+  public static void main(String[] args) throws Exception 
+  {
+
+    ConfigurationBuilder cb = new ConfigurationBuilder();
+   cb.setDebugEnabled(true);
+  cb.setOAuthConsumerKey("7H0tnWTrwJUaWBGY5RCub8LEW");
+  cb.setOAuthConsumerSecret("HxuA9wyMy48WqSrFYcdeB9fMfibPvPuMVrKSILDQ2q9tR0dsRY");
+  cb.setOAuthAccessToken("902769774022840320-Tg7ZYxxDVrAwKno9ctuMie8bNxv5nRH");
+  cb.setOAuthAccessTokenSecret("a8DNJVG9B2y2G7B6fxUPcl4zzbLjsalDDhP2DAGgyRlV1");
+  
+    Twitter twitter = new TwitterFactory(cb.build()).getInstance();
+    Query query = new Query("#akshaykumar");
+     
+    int numberOfTweets = 5000;
+    long lastID = Long.MAX_VALUE;
+    ArrayList<Status> tweets = new ArrayList<Status>();
+    while (tweets.size () < numberOfTweets) {
+      if (numberOfTweets - tweets.size() > 100)
+        query.setCount(100);
+      else 
+        query.setCount(numberOfTweets - tweets.size());
+      try {
+        QueryResult result = twitter.search(query);
+        tweets.addAll(result.getTweets());
+        System.out.println("Gathered " + tweets.size() + " tweets"+"\n");
+        for (Status t: tweets) 
+          if(t.getId() < lastID) 
+              lastID = t.getId();
+
+      }
+
+      catch (TwitterException te) {
+        System.out.println("Couldn't connect: " + te);
+      }
+      query.setMaxId(lastID-1);
+    }
+     
+
+    for (int i = 0; i < tweets.size(); i++) {
+      Status t = (Status) tweets.get(i);
+
+
+      String user = t.getUser().getScreenName();
+      Long twitter_id=t.getUser().getId();
+      int follower_count=t.getUser().getFollowersCount();
+      String msg = t.getText();
+     if(follower_count > 100000){
+        // int j=0;
+        //String directMessage="Hi, this is just a test message.";
+       System.out. println(" USER: " + user + "\n" + "User Id:  " + twitter_id + " Wrote: " + msg + "\n" + "follower count of the user is:  "+ follower_count); 
+            // System.out.println(j++);  
+           // DirectMessage directMessage = twitter.sendDirectMessage(user, directMessage);
+            
+    }
+    }
+              }
+  }
